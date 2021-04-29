@@ -19,5 +19,30 @@
       "name": "user.password",
       "type": "java.lang.String",
       "description": "Description for user.password."
+    },
+    {
+      "name": "uri.base",
+      "type": "java.lang.String",
+      "description": "URI base."
+    },
+    {
+      "name": "uri.menu.controller",
+      "type": "java.lang.String",
+      "description": "URI menu."
+    },
+    {
+      "name": "uri.user.controller",
+      "type": "java.lang.String",
+      "description": "URI user."
+    },
+    {
+      "name": "uri.restaurant.controller",
+      "type": "java.lang.String",
+      "description": "URI restaurant."
+    },
+    {
+      "name": "uri.dish.controller",
+      "type": "java.lang.String",
+      "description": "URI dish."
     }
   ] }

@@ -4,9 +4,9 @@ import ru.zhulin.oleg.restsystem.model.ParentEntity;
 
 import java.util.List;
 
-public class AbstractService<T extends ParentEntity> implements IService<T>{
+public class AbstractService<T extends ParentEntity, N extends Number> implements IService<T,N>{
     @Override
-    public <N extends Number> T get(N id) {
+    public T get(N id) {
         return null;
     }
 
@@ -21,12 +21,12 @@ public class AbstractService<T extends ParentEntity> implements IService<T>{
     }
 
     @Override
-    public <N extends Number> T update(T item, N id) {
+    public T update(T item, N id) {
         return null;
     }
 
     @Override
-    public <N extends Number> void delete(N id) {
+    public  void delete(N id) {
 
     }
 

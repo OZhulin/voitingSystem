@@ -1,4 +1,4 @@
-package ru.zhulin.oleg.restsystem.util;
+package ru.zhulin.oleg.restsystem.validation;
 
 import ru.zhulin.oleg.restsystem.model.ParentEntity;
 
