@@ -1,31 +1,15 @@
 package ru.zhulin.oleg.restsystem.controller;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.zhulin.oleg.restsystem.model.ParentEntity;
+import ru.zhulin.oleg.restsystem.validation.RestSystemValidationError;
 
-public class AbstractController<T extends ParentEntity> implements IController<T>{
-    @Override
-    public <N extends Number> ResponseEntity<T> get(N id) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Iterable<T>> getAll() {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<T> create(T item) {
-        return null;
-    }
-
-    @Override
-    public <N extends Number> ResponseEntity<T> update(T item, N id) {
-        return null;
-    }
-
-    @Override
-    public <N extends Number> ResponseEntity<T> delete(N id) {
-        return null;
+public class AbstractController<T extends ParentEntity>{
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public RestSystemValidationError handleException(Exception exception){
+        return new RestSystemValidationError(exception.getMessage());
     }
 }

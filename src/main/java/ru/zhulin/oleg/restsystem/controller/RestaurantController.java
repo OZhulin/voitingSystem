@@ -25,7 +25,7 @@ import java.net.URI;
 @Tag(name = "Restaurant", description = "The restaurant API")
 @RestController
 @RequestMapping("/api/v1/restaurants")
-public class RestaurantController {
+public class RestaurantController extends AbstractController<Restaurant> {
     private RestaurantService restaurantService;
 
     @Autowired

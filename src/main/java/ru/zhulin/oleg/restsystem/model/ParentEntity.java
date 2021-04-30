@@ -3,6 +3,7 @@ package ru.zhulin.oleg.restsystem.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Access(AccessType.FIELD)
@@ -19,7 +20,19 @@ public class ParentEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
     @Access(AccessType.PROPERTY)
     private Long id;
+    @Column(updatable = false)
+    private LocalDateTime created;
+    private LocalDateTime modified;
     public boolean isNew(){
         return (getId() == null);
+    }
+    @PrePersist
+    public void onCreate(){
+        setCreated(LocalDateTime.now());
+        setModified(LocalDateTime.now());
+    }
+    @PreUpdate
+    public void onUpdate(){
+        setModified(LocalDateTime.now());
     }
 }

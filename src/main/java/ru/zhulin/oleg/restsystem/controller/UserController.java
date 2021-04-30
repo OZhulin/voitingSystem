@@ -28,7 +28,7 @@ import java.net.URI;
 @Tag(name = "User", description = "The user API")
 @RestController
 @RequestMapping("/api/v1/users")
-public class UserController {
+public class UserController extends AbstractController<User> {
     private UserService userService;
     @Autowired
     public UserController(UserService userService) {

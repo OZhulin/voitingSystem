@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "Menu", description = "The menu API")
 @RestController
 @RequestMapping("/api/v1/menus")
-public class MenuController {
+public class MenuController extends AbstractController<Menu> {
     private MenuService menuService;
 
     @Autowired

@@ -28,7 +28,7 @@ import java.time.LocalDate;
 @Tag(name = "Vote", description = "The vote API")
 @RestController
 @RequestMapping("/api/v1/votes")
-public class VoteController {
+public class VoteController extends AbstractController<Vote> {
     private VoteService voteService;
     @Autowired
     public VoteController(VoteService voteService) {
