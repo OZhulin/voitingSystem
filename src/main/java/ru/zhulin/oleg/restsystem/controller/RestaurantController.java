@@ -12,10 +12,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.zhulin.oleg.restsystem.model.Restaurant;
 import ru.zhulin.oleg.restsystem.service.RestaurantService;
+import ru.zhulin.oleg.restsystem.validation.RestSystemValidationErrorBuilder;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -75,8 +77,13 @@ public class RestaurantController extends AbstractController<Restaurant> {
             @ApiResponse(responseCode = "409", description = "already exists")
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> create(@Parameter(description = "body of restaurant", required = true)
-                                             @Valid @RequestBody Restaurant restaurant){
+    public ResponseEntity<?> create(@Parameter(description = "body of restaurant", required = true)
+                                             @Valid @RequestBody Restaurant restaurant,
+                                             Errors errors){
+        if(errors.hasErrors()){
+            log.warn("Bad request. Request has errors: {}", errors.getAllErrors());
+            return ResponseEntity.badRequest().body(RestSystemValidationErrorBuilder.fromBindingErrors(errors));
+        }
         restaurant.setId(null);
         log.info("Creating restaurant");
         Restaurant newRestaurant = restaurantService.create(restaurant);
@@ -98,10 +105,15 @@ public class RestaurantController extends AbstractController<Restaurant> {
             @ApiResponse(responseCode = "405", description = "validation exception")
     })
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> update(@Parameter(description = "restaurant body", required = true)
+    public ResponseEntity<?> update(@Parameter(description = "restaurant body", required = true)
                                              @Valid @RequestBody Restaurant restaurant,
                                              @Parameter(description = "id of restaurant", required = true)
-                                             @PathVariable Long id){
+                                             @PathVariable Long id,
+                                             Errors errors){
+        if(errors.hasErrors()){
+            log.warn("Bad request. Request has errors: {}", errors.getAllErrors());
+            return ResponseEntity.badRequest().body(RestSystemValidationErrorBuilder.fromBindingErrors(errors));
+        }
         restaurant.setId(id);
         log.info("Updating restaurant {} by body {}", id, restaurant);
         Restaurant updatedRestaurant = restaurantService.update(restaurant);

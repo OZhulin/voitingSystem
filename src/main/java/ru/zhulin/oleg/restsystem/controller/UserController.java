@@ -13,12 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.zhulin.oleg.restsystem.model.User;
 import ru.zhulin.oleg.restsystem.security.AuthorizedUser;
 import ru.zhulin.oleg.restsystem.service.UserService;
 import ru.zhulin.oleg.restsystem.to.UserTo;
+import ru.zhulin.oleg.restsystem.validation.RestSystemValidationErrorBuilder;
 
 import javax.validation.Valid;
 
@@ -77,9 +79,14 @@ public class UserController extends AbstractController<User> {
             @ApiResponse(responseCode = "409", description = "already exists")
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> create(@Parameter(description = "body of user", required = true,
+    public ResponseEntity<?> create(@Parameter(description = "body of user", required = true,
                                                   schema = @Schema(implementation = User.class))
-                                       @Valid @RequestBody User user){
+                                       @Valid @RequestBody User user,
+                                       Errors errors){
+        if(errors.hasErrors()){
+            log.warn("Bad request. Request has errors: {}", errors.getAllErrors());
+            return ResponseEntity.badRequest().body(RestSystemValidationErrorBuilder.fromBindingErrors(errors));
+        }
         user.setId(null);
         log.info("Create user {}", user);
         User newUser = userService.create(user);
@@ -101,11 +108,16 @@ public class UserController extends AbstractController<User> {
             @ApiResponse(responseCode = "405", description = "validation exception")
     })
     @PutMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> update(@Parameter(description = "id of user", required = true)
+    public ResponseEntity<?> update(@Parameter(description = "id of user", required = true)
                                        @PathVariable Long userId,
                                        @Parameter(description = "body of user", required = true,
                                                   schema = @Schema(implementation = User.class))
-                                       @Valid @RequestBody User user){
+                                       @Valid @RequestBody User user,
+                                       Errors errors){
+        if(errors.hasErrors()){
+            log.warn("Bad request. Request has errors: {}", errors.getAllErrors());
+            return ResponseEntity.badRequest().body(RestSystemValidationErrorBuilder.fromBindingErrors(errors));
+        }
         user.setId(userId);
         log.info("Update user with id {} to body {}", userId, user);
         User updatedUser = userService.update(user);
@@ -157,12 +169,17 @@ public class UserController extends AbstractController<User> {
             @ApiResponse(responseCode = "405", description = "validation exception")
     })
     @PutMapping(value = "/authorized", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> updateAuthorizedUser(@Parameter(description = "User transfer object", required = true,
+    public ResponseEntity<?> updateAuthorizedUser(@Parameter(description = "User transfer object", required = true,
                                                                 schema = @Schema(implementation = UserTo.class))
                                                      @Valid @RequestBody UserTo userTo,
                                                      @Parameter(description = "Authorized user object", required = true,
                                                                 schema = @Schema(implementation = AuthorizedUser.class))
-                                                     @AuthenticationPrincipal AuthorizedUser authorizedUser){
+                                                     @AuthenticationPrincipal AuthorizedUser authorizedUser,
+                                                     Errors errors){
+        if(errors.hasErrors()){
+            log.warn("Bad request. Request has errors: {}", errors.getAllErrors());
+            return ResponseEntity.badRequest().body(RestSystemValidationErrorBuilder.fromBindingErrors(errors));
+        }
         userTo.setId(authorizedUser.getId());
         log.info("Update authorized user {} by body {}", authorizedUser, userTo);
         User user = userService.update(userService.fromTo(userTo));

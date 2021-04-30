@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.zhulin.oleg.restsystem.model.Menu;
 import ru.zhulin.oleg.restsystem.service.MenuService;
+import ru.zhulin.oleg.restsystem.validation.RestSystemValidationErrorBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -100,11 +102,16 @@ public class MenuController extends AbstractController<Menu> {
             @ApiResponse(responseCode = "409", description = "already exists")
     })
     @PostMapping(value = "/restaurant/{restaurantId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Menu> create(@Parameter(description = "Menu to create", required = true,
+    public ResponseEntity<?> create(@Parameter(description = "Menu to create", required = true,
                                                   schema = @Schema(implementation = Menu.class))
-                                       @RequestBody Menu menu,
+                                       @Valid @RequestBody Menu menu,
                                        @Parameter(description = "Restaurant for menu", required = true)
-                                       @PathVariable Long restaurantId){
+                                       @PathVariable Long restaurantId,
+                                       Errors errors){
+        if(errors.hasErrors()){
+            log.warn("Bad request. Request has errors: {}", errors.getAllErrors());
+            return ResponseEntity.badRequest().body(RestSystemValidationErrorBuilder.fromBindingErrors(errors));
+        }
         menu.setId(null);
         menu.setRestaurant(null);
         log.info("Creating menu {}", menu);
@@ -129,13 +136,18 @@ public class MenuController extends AbstractController<Menu> {
             @ApiResponse(responseCode = "405", description = "validation exception")
     })
     @PutMapping(value = "/restaurant/{restaurantId}/menu/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Menu> update(@Parameter(description = "menu to update", required = true,
+    public ResponseEntity<?> update(@Parameter(description = "menu to update", required = true,
                                                   schema = @Schema(implementation = Menu.class))
                                        @Valid @RequestBody Menu menu,
                                        @Parameter(description = "id of restaurant", required = true)
                                        @PathVariable Long restaurantId,
                                        @Parameter(description = "id of menu", required = true)
-                                       @PathVariable Long id){
+                                       @PathVariable Long id,
+                                       Errors errors){
+        if(errors.hasErrors()){
+            log.warn("Bad request. Request has errors: {}", errors.getAllErrors());
+            return ResponseEntity.badRequest().body(RestSystemValidationErrorBuilder.fromBindingErrors(errors));
+        }
         menu.setId(id);
         log.info("Updating menu with id {} by body menu {}", id, menu);
         Menu updatedMenu = menuService.update(menu, restaurantId);

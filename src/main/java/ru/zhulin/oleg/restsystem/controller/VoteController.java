@@ -17,9 +17,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.zhulin.oleg.restsystem.RestSystemApp;
 import ru.zhulin.oleg.restsystem.model.Vote;
 import ru.zhulin.oleg.restsystem.security.AuthorizedUser;
 import ru.zhulin.oleg.restsystem.service.VoteService;
+import ru.zhulin.oleg.restsystem.validation.RestSystemValidationErrorBuilder;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -70,9 +72,8 @@ public class VoteController extends AbstractController<Vote> {
                                     @AuthenticationPrincipal AuthorizedUser authorizedUser,
                                     Errors errors){
         if(errors.hasErrors()){
-            //todo validation
             log.warn("Bad request. Request has errors: {}", errors.getAllErrors());
-            return ResponseEntity.badRequest().body(errors.getAllErrors().toString());
+            return ResponseEntity.badRequest().body(RestSystemValidationErrorBuilder.fromBindingErrors(errors));
         }
         if((voteService.getByUserIdAndLocalDate(authorizedUser.getId(), LocalDate.now())) != null){
             log.warn("Vote already exists");
