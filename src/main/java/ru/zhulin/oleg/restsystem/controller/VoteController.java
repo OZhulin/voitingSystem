@@ -49,7 +49,6 @@ public class VoteController extends AbstractController<Vote> {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Iterable<Vote>> getAll(@Parameter(description = "Date of votes", required = true)
                                                  @RequestParam(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
-        //todo validation
         log.info("Get all votes by date {}", date);
         return ResponseEntity.ok(voteService.getAllByDate(date));
     }
