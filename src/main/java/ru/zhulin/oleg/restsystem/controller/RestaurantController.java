@@ -78,7 +78,7 @@ public class RestaurantController extends AbstractController<Restaurant> {
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> create(@Parameter(description = "body of restaurant", required = true)
-                                             @Valid @RequestBody Restaurant restaurant,
+                                             @RequestBody Restaurant restaurant,
                                              Errors errors){
         if(errors.hasErrors()){
             log.warn("Bad request. Request has errors: {}", errors.getAllErrors());

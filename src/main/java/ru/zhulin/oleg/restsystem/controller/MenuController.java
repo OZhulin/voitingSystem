@@ -104,7 +104,7 @@ public class MenuController extends AbstractController<Menu> {
     @PostMapping(value = "/restaurant/{restaurantId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> create(@Parameter(description = "Menu to create", required = true,
                                                   schema = @Schema(implementation = Menu.class))
-                                       @Valid @RequestBody Menu menu,
+                                       @RequestBody Menu menu,
                                        @Parameter(description = "Restaurant for menu", required = true)
                                        @PathVariable Long restaurantId,
                                        Errors errors){

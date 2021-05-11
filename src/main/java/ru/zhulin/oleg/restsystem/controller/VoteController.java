@@ -64,26 +64,17 @@ public class VoteController extends AbstractController<Vote> {
             @ApiResponse(responseCode = "409", description = "already exists")
     })
     @PostMapping(value = "/restaurant/{restaurantId}")
-    public ResponseEntity<?> create(@Parameter(description = "Id of restaurant", required = true)
+    public ResponseEntity<Vote> create(@Parameter(description = "Id of restaurant", required = true)
                                     @PathVariable Long restaurantId,
                                     @Parameter(description = "User who authorized for voting", required = true,
                                                schema = @Schema(implementation = Vote.class))
-                                    @AuthenticationPrincipal AuthorizedUser authorizedUser,
-                                    Errors errors){
-        if(errors.hasErrors()){
-            log.warn("Bad request. Request has errors: {}", errors.getAllErrors());
-            return ResponseEntity.badRequest().body(RestSystemValidationErrorBuilder.fromBindingErrors(errors));
-        }
-        if((voteService.getByUserIdAndLocalDate(authorizedUser.getId(), LocalDate.now())) != null){
-            log.warn("Vote already exists");
-            return ResponseEntity.status(409).body("Vote already exists");
-        }
+                                    @AuthenticationPrincipal AuthorizedUser authorizedUser){
         Vote newVote = new Vote(null, null, null, LocalDate.now());
         log.info("Create vote for restaurant {} by authorized users {}", restaurantId, authorizedUser.getUsername());
         Vote vote = voteService.create(newVote, authorizedUser.getId(), restaurantId);
         URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/v1/votes/restaurant/{id}/vote/{voteId}")
                 .buildAndExpand(restaurantId, vote.getId()).toUri();
-        return ResponseEntity.created(location).build();
+       return ResponseEntity.created(location).body(vote);
     }
 }
